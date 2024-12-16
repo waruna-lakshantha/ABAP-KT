@@ -1,0 +1,58 @@
+*&---------------------------------------------------------------------*
+*& Report Z_LOOPS
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z_LOOPS.
+
+"1. Unconditional loop
+DO.
+  "Loop Counter = SY-INDEX
+  WRITE / |Unconditional Loop Index is { SY-INDEX }|.
+  IF SY-INDEX > 9.
+    "Endless Loop without EXIT Command.
+    EXIT.
+  ENDIF.
+ENDDO.
+
+WRITE /.
+
+"2. Index-controlled loop
+DO 10 TIMES.
+  "Loop Counter = SY-INDEX
+  WRITE / |Index-controlled Loop Index is { SY-INDEX }|.
+ENDDO.
+
+WRITE /.
+
+"3. Header-controlled loops
+DATA LV_INDEX TYPE I VALUE 1.
+
+WHILE LV_INDEX <= 10.
+  "Loop Counter = SY-INDEX
+  WRITE / |Header-controlled Loops Index is { SY-INDEX }|.
+  LV_INDEX = LV_INDEX + 1.
+ENDWHILE.
+
+WRITE /.
+
+"4. Read loops SELECT ENDSELECT
+SELECT CARRID,
+  CARRNAME,
+  CURRCODE
+ FROM SCARR INTO @DATA(LV_CSARR).
+  "Loop Counter = SY-DBCNT
+  WRITE / |Read loop (SELECT ENDSELECT) Index is { SY-DBCNT } { LV_CSARR-CARRNAME }|.
+ENDSELECT.
+
+WRITE /.
+
+SELECT *
+FROM SCARR INTO TABLE @DATA(ITAB_CSARR).
+
+DATA WA_CSARR TYPE SCARR.
+
+LOOP AT ITAB_CSARR INTO WA_CSARR.
+  "Loop Counter = SY-TABIX
+  WRITE / |Read loop Index is { SY-TABIX } { WA_CSARR-CARRNAME }|.
+ENDLOOP.
