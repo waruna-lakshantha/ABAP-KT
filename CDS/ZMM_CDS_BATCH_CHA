@@ -1,0 +1,19 @@
+@AbapCatalog.sqlViewName: 'ZMM_BATCH_CHA'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Material Characteristics Batch'
+define view ZMM_CDS_BATCH_CHA
+  with parameters
+    p_atnam :atnam
+  as select from cabn as cb
+    inner join   ausp as au on cb.atinn = au.atinn
+                            and cb.mandt = au.mandt
+{
+
+  au.objek,
+  au.atwrt
+
+}
+where
+  atnam = :p_atnam;
