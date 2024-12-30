@@ -1,0 +1,23 @@
+METHOD pivot_sales_data
+  BY DATABASE PROCEDURE FOR HDB
+  LANGUAGE SQLSCRIPT
+  USING SALES_DATA.
+
+  DECLARE dynamic_sql NVARCHAR(5000);
+  DECLARE columns NVARCHAR(1000);
+
+  -- Step 1: Fetch distinct regions for dynamic columns
+  SELECT STRING_AGG(DISTINCT '\"' || REGION || '\"', ', ') INTO columns
+  FROM SALES_DATA;
+
+  -- Step 2: Construct dynamic pivot SQL
+  dynamic_sql = 
+    'SELECT * 
+     FROM (SELECT YEAR, REGION, SALES 
+           FROM SALES_DATA) 
+     PIVOT (SUM(SALES) FOR REGION IN (' || columns || '))';
+
+  -- Step 3: Execute the dynamic SQL
+  EXEC dynamic_sql INTO result_table;
+
+ENDMETHOD.
