@@ -1,0 +1,70 @@
+*CDS View with Parameters
+
+@AbapCatalog.sqlViewName: 'ZNET_SALES_PAR'
+@AbapCatalog.compiler.compareFilter: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'CDS View for Net Sales Value by Org, Division, and Channel with Parameters'
+define view ZCDS_NetSalesValue_Param 
+  with parameters 
+    p_sales_org : vbak-vkorg,       " Sales Organization
+    p_date_from : vbak-audat,      " Start Date
+    p_date_to   : vbak-audat       " End Date
+as select from vbak
+  inner join vbap on vbak.vbeln = vbap.vbeln
+{
+  @EndUserText.label: 'Sales Organization'
+  vbak.vkorg as SalesOrganization,
+
+  @EndUserText.label: 'Division'
+  vbak.spart as Division,
+
+  @EndUserText.label: 'Distribution Channel'
+  vbak.vtweg as DistributionChannel,
+
+  @EndUserText.label: 'Net Sales Value'
+  sum( vbap.netwr ) as NetSalesValue,
+
+  @EndUserText.label: 'Currency'
+  vbak.waerk as Currency
+}
+where
+  vbak.mandt = $session.client                  " Client-specific filter
+  and vbak.vkorg = :p_sales_org                 " Filter for Sales Organization
+  and vbak.audat between :p_date_from and :p_date_to " Filter for Date Range
+group by 
+  vbak.vkorg,
+  vbak.spart,
+  vbak.vtweg,
+  vbak.waerk
+;
+
+
+* Example Usage in ABAP Code
+* You can call the CDS view with parameters in an ABAP program like this:
+
+DATA: lt_sales_summary TYPE TABLE OF zcds_netsalesvalue_param,
+      ls_sales_summary TYPE zcds_netsalesvalue_param.
+
+DATA: lv_sales_org TYPE vbak-vkorg VALUE '1000',
+      lv_date_from TYPE vbak-audat VALUE '20230101',
+      lv_date_to   TYPE vbak-audat VALUE '20231231'.
+
+SELECT * 
+  FROM zcds_netsalesvalue_param( p_sales_org = @lv_sales_org,
+                                 p_date_from = @lv_date_from,
+                                 p_date_to   = @lv_date_to )
+  INTO TABLE lt_sales_summary.
+
+LOOP AT lt_sales_summary INTO ls_sales_summary.
+  WRITE: / 'Sales Org:', ls_sales_summary-SalesOrganization,
+         'Division:', ls_sales_summary-Division,
+         'Channel:', ls_sales_summary-DistributionChannel,
+         'Net Sales:', ls_sales_summary-NetSalesValue,
+         'Currency:', ls_sales_summary-Currency.
+ENDLOOP.
+
+
+* Example Output:
+* Sales Organization	Division	Distribution Channel	Net Sales Value	Currency
+* 1000	              01	      10	                  450,000.00	    EUR
+* 1000	              02	      20	                  300,000.00	    EUR
