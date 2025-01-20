@@ -1,0 +1,59 @@
+REPORT ztable_example.
+
+TYPES: BEGIN OF ty_data,
+         key    TYPE i,
+         value  TYPE string,
+       END OF ty_data.
+
+DATA: lt_standard TYPE TABLE OF ty_data,
+      lt_sorted   TYPE SORTED TABLE OF ty_data WITH UNIQUE KEY key,
+      lt_hashed   TYPE HASHED TABLE OF ty_data WITH UNIQUE KEY key.
+
+DATA: ls_row TYPE ty_data,
+      lv_value TYPE string.
+
+* Populating data
+DO 5 TIMES.
+  ls_row-key = sy-index.
+  ls_row-value = |Value { sy-index }|.
+  APPEND ls_row TO lt_standard.
+  INSERT ls_row INTO TABLE lt_sorted.
+  INSERT ls_row INTO TABLE lt_hashed.
+ENDDO.
+
+* Accessing Standard Table
+WRITE: / 'Standard Table: Searching key = 3 (Linear Search)'.
+READ TABLE lt_standard INTO ls_row WITH KEY key = 3.
+IF sy-subrc = 0.
+  WRITE: / 'Found:', ls_row-value.
+ELSE.
+  WRITE: / 'Not Found.'.
+ENDIF.
+
+* Accessing Sorted Table
+WRITE: / 'Sorted Table: Searching key = 3 (Binary Search)'.
+READ TABLE lt_sorted INTO ls_row WITH KEY key = 3.
+IF sy-subrc = 0.
+  WRITE: / 'Found:', ls_row-value.
+ELSE.
+  WRITE: / 'Not Found.'.
+ENDIF.
+
+* Accessing Hashed Table
+WRITE: / 'Hashed Table: Searching key = 3 (Hash Search)'.
+READ TABLE lt_hashed INTO ls_row WITH TABLE KEY key = 3.
+IF sy-subrc = 0.
+  WRITE: / 'Found:', ls_row-value.
+ELSE.
+  WRITE: / 'Not Found.'.
+ENDIF.
+
+* Output Example:
+* Standard Table: Searching key = 3 (Linear Search)
+* Found: Value 3
+
+* Sorted Table: Searching key = 3 (Binary Search)
+* Found: Value 3
+
+* Hashed Table: Searching key = 3 (Hash Search)
+* Found: Value 3
