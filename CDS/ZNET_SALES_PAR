@@ -55,6 +55,7 @@ SELECT *
                                  p_date_to   = @lv_date_to )
   INTO TABLE lt_sales_summary.
 
+* Traditional Approach:
 LOOP AT lt_sales_summary INTO ls_sales_summary.
   WRITE: / 'Sales Org:', ls_sales_summary-SalesOrganization,
          'Division:', ls_sales_summary-Division,
@@ -64,6 +65,7 @@ LOOP AT lt_sales_summary INTO ls_sales_summary.
 ENDLOOP.
 
 * It is possible to replace above loop with following line of code
+* Modern Approach:
 cl_demo_output=>display ( data = lt_sales_summary )
 
 * Example Output:
