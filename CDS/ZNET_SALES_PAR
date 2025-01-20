@@ -63,6 +63,8 @@ LOOP AT lt_sales_summary INTO ls_sales_summary.
          'Currency:', ls_sales_summary-Currency.
 ENDLOOP.
 
+* It is possible to replace above loop with following line of code
+cl_demo_output=>display ( data = lt_sales_summary )
 
 * Example Output:
 * Sales Organization	Division	Distribution Channel	Net Sales Value	Currency
