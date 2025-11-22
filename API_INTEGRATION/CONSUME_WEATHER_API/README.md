@@ -269,7 +269,7 @@ Pull requests are welcome!
 
 ## 📚 Related Articles
 
-* **SAP Community Article:** *Consuming the Open-Meteo API Using ABAP (Full Guide)*
+* **SAP Community Article:** [Free Open-Meteo Weather API](https://community.sap.com/t5/enterprise-resource-planning-blog-posts-by-members/consuming-the-free-open-meteo-weather-api-using-abap-a-practical-reusable/ba-p/14275016)
 * **Upcoming:** *Calling Secured REST APIs (Basic + Token) in ABAP*
 * **Upcoming:** *Building a Fiori List Report for Weather Snapshots*
 
