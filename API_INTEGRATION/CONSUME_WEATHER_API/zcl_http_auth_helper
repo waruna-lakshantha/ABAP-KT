@@ -1,0 +1,11 @@
+CLASS zcl_http_auth_helper DEFINITION PUBLIC FINAL CREATE PRIVATE.
+  PUBLIC SECTION.
+    CLASS-METHODS set_basic_auth
+      IMPORTING io_http_client TYPE REF TO if_http_client
+                iv_username TYPE string
+                iv_password TYPE string.
+
+    CLASS-METHODS set_bearer_auth
+      IMPORTING io_http_client TYPE REF TO if_http_client
+                iv_token TYPE string.
+ENDCLASS.
