@@ -1,0 +1,33 @@
+CLASS zcl_weather_app_service DEFINITION
+  PUBLIC FINAL CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    METHODS constructor
+      IMPORTING io_provider TYPE REF TO zif_weather_provider
+                io_repo     TYPE REF TO zcl_weather_repository.
+
+    METHODS collect_and_save
+      IMPORTING iv_latitude TYPE decfloat16
+                iv_longitude TYPE decfloat16
+                iv_location TYPE zweather_snap-location_id.
+ENDCLASS.
+
+CLASS zcl_weather_app_service IMPLEMENTATION.
+
+  METHOD constructor.
+    me->io_provider = io_provider.
+    me->io_repo = io_repo.
+  ENDMETHOD.
+
+  METHOD collect_and_save.
+    DATA ls TYPE ty_weather_snapshot.
+
+    ls = io_provider->get_current_weather(
+      iv_latitude  = iv_latitude
+      iv_longitude = iv_longitude
+      iv_location  = iv_location ).
+
+    io_repo->save_snapshot( ls ).
+  ENDMETHOD.
+
+ENDCLASS.
