@@ -1,0 +1,20 @@
+CLASS zcl_weather_open_meteo DEFINITION
+  PUBLIC FINAL CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES zif_weather_provider.
+
+  PRIVATE SECTION.
+    CONSTANTS gc_base TYPE string VALUE
+      'https://api.open-meteo.com/v1/forecast'.
+
+    METHODS build_url
+      IMPORTING iv_latitude  TYPE decfloat16
+                iv_longitude TYPE decfloat16
+      RETURNING VALUE(rv_url) TYPE string.
+
+    METHODS map_api_to_snapshot
+      IMPORTING is_api TYPE ty_api_response
+                iv_location TYPE zweather_snap-location_id
+      RETURNING VALUE(rs_snap) TYPE ty_weather_snapshot.
+ENDCLASS.
