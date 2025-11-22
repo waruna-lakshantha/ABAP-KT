@@ -1,0 +1,24 @@
+REPORT zweather_collector.
+
+PARAMETERS:
+  p_lat TYPE decfloat16 DEFAULT '6.9271' OBLIGATORY,
+  p_lon TYPE decfloat16 DEFAULT '79.8612' OBLIGATORY,
+  p_loc TYPE zweather_snap-location_id DEFAULT 'COLOMBO' OBLIGATORY.
+
+DATA lo_service TYPE REF TO zcl_weather_app_service.
+
+START-OF-SELECTION.
+
+  lo_service = NEW zcl_weather_app_service(
+                 io_provider = NEW zcl_weather_open_meteo( )
+                 io_repo     = NEW zcl_weather_repository( ) ).
+
+  TRY.
+      lo_service->collect_and_save(
+        iv_latitude  = p_lat
+        iv_longitude = p_lon
+        iv_location  = p_loc ).
+      WRITE: / 'Weather snapshot saved for', p_loc.
+    CATCH cx_root INTO DATA(lx).
+      WRITE lx->get_text( ).
+  ENDTRY.
