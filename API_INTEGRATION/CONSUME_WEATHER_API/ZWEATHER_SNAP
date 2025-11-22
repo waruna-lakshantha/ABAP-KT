@@ -1,1 +1,21 @@
+@EndUserText.label: 'Weather snapshot from Open-Meteo'
+define table zweather_snap {
+  key mandt        : abap.clnt;
+  key location_id  : abap.char(20);
+  key obs_date     : abap.dats;
+  key obs_time     : abap.tims;
+
+  latitude         : abap.dec(8,5);
+  longitude        : abap.dec(8,5);
+  timezone         : abap.char(40);
+  temp_c           : abap.dec(5,2);
+  windspeed        : abap.dec(5,2);
+  winddir          : abap.dec(5,1);
+  weathercode      : abap.int4;
+  is_day           : abap.char(1);
+
+  created_on       : abap.dats;
+  created_at       : abap.tims;
+  created_by       : abap.uname;
+}
 
