@@ -7,3 +7,70 @@ INTERFACE zif_weather_provider PUBLIC.
     RETURNING VALUE(rs_weather) TYPE ty_weather_snapshot
     RAISING cx_root.
 ENDINTERFACE.
+
+CLASS zcl_weather_open_meteo IMPLEMENTATION.
+
+  METHOD zif_weather_provider~get_current_weather.
+    DATA lo_http TYPE REF TO if_http_client.
+    DATA lv_url TYPE string.
+    DATA lv_json TYPE string.
+    DATA ls_api TYPE ty_api_response.
+
+    lv_url = build_url( iv_latitude = iv_latitude
+                        iv_longitude = iv_longitude ).
+
+    cl_http_client=>create_by_url(
+      EXPORTING url = lv_url
+      IMPORTING client = lo_http ).
+
+    lo_http->request->set_method( 'GET' ).
+
+    lo_http->send( ).
+    lo_http->receive( ).
+
+    lv_json = lo_http->response->get_cdata( ).
+
+    /ui2/cl_json=>deserialize(
+      EXPORTING json = lv_json
+      CHANGING  data = ls_api ).
+
+    rs_weather = map_api_to_snapshot(
+                    is_api = ls_api
+                    iv_location = iv_location ).
+  ENDMETHOD.
+
+
+  METHOD build_url.
+    rv_url = |{ gc_base }?latitude={ iv_latitude }| &&
+             |&longitude={ iv_longitude }| &&
+             |&current_weather=true|.
+  ENDMETHOD.
+
+
+  METHOD map_api_to_snapshot.
+    DATA lv_date TYPE string.
+    DATA lv_time TYPE string.
+
+    SPLIT is_api-current_weather-time AT 'T'
+      INTO lv_date lv_time.
+
+    REPLACE ALL OCCURRENCES OF '-' IN lv_date WITH ''.
+    REPLACE ALL OCCURRENCES OF ':' IN lv_time WITH ''.
+    CONCATENATE lv_time '00' INTO lv_time.
+
+    rs_snap-location_id = iv_location.
+    rs_snap-latitude    = is_api-latitude.
+    rs_snap-longitude   = is_api-longitude.
+    rs_snap-timezone    = is_api-timezone.
+    rs_snap-temp_c      = is_api-current_weather-temperature.
+    rs_snap-windspeed   = is_api-current_weather-windspeed.
+    rs_snap-winddir     = is_api-current_weather-winddirection.
+    rs_snap-weathercode = is_api-current_weather-weathercode.
+    rs_snap-is_day      = COND #( WHEN is_api-current_weather-is_day = abap_true THEN 'X' ELSE space ).
+
+    rs_snap-obs_date = lv_date.
+    rs_snap-obs_time = lv_time.
+  ENDMETHOD.
+
+ENDCLASS.
+
