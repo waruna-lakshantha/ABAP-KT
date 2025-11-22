@@ -1,0 +1,9 @@
+INTERFACE zif_weather_provider PUBLIC.
+  METHODS get_current_weather
+    IMPORTING
+      iv_latitude  TYPE decfloat16
+      iv_longitude TYPE decfloat16
+      iv_location  TYPE zweather_snap-location_id
+    RETURNING VALUE(rs_weather) TYPE ty_weather_snapshot
+    RAISING cx_root.
+ENDINTERFACE.
