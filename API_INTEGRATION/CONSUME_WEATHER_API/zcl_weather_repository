@@ -1,0 +1,25 @@
+CLASS zcl_weather_repository DEFINITION
+  PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS save_snapshot
+      IMPORTING is_snapshot TYPE ty_weather_snapshot.
+ENDCLASS.
+
+CLASS zcl_weather_repository IMPLEMENTATION.
+
+  METHOD save_snapshot.
+    DATA ls TYPE zweather_snap.
+    MOVE-CORRESPONDING is_snapshot TO ls.
+
+    ls-mandt      = sy-mandt.
+    ls-created_on = sy-datum.
+    ls-created_at = sy-uzeit.
+    ls-created_by = sy-uname.
+
+    INSERT zweather_snap FROM ls.
+    IF sy-subrc <> 0.
+      MODIFY zweather_snap FROM ls.
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
